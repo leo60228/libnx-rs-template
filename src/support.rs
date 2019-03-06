@@ -9,18 +9,13 @@
 //!
 //! By sharing these items between these examples, we can test and ensure that the different events
 //! and drawing backends behave in the same manner.
+#![cfg(not(test))]
 #![allow(dead_code)]
 
-#![cfg(feature="conrod-test")]
-
-extern crate rand;
-
-use std;
-use conrod::text::*;
 use conrod::position::{Align, Direction, Padding, Position, Relative};
-use conrod::{widget, Colorable, Labelable, Positionable, Sizeable, Widget};
+use conrod::{widget, widget_ids, Colorable, Labelable, Positionable, Sizeable, Widget};
+use std;
 use std::iter::once;
-
 
 pub const WIN_W: u32 = 1280;
 pub const WIN_H: u32 = 720;
@@ -30,17 +25,15 @@ pub struct DemoApp {
     ball_xy: conrod::Point,
     ball_color: conrod::Color,
     sine_frequency: f32,
-    rust_logo: conrod::image::Id,
 }
 
 impl DemoApp {
     /// Simple constructor for the `DemoApp`.
-    pub fn new(rust_logo: conrod::image::Id) -> Self {
+    pub fn new() -> Self {
         DemoApp {
             ball_xy: [0.0, 0.0],
             ball_color: conrod::color::WHITE,
             sine_frequency: 1.0,
-            rust_logo: rust_logo,
         }
     }
 }
@@ -95,7 +88,6 @@ widget_ids! {
 
         // Image.
         image_title,
-        rust_logo,
 
         // Button, XyPad, Toggle.
         button_title,
@@ -117,12 +109,11 @@ widget_ids! {
 
 /// Instantiate a GUI demonstrating every widget available in conrod.
 pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
-
     const MARGIN: conrod::Scalar = 30.0;
     const SHAPE_GAP: conrod::Scalar = 50.0;
     const TITLE_SIZE: conrod::FontSize = 42;
     const SUBTITLE_SIZE: conrod::FontSize = 32;
-    
+
     // `Canvas` is a widget that provides some basic functionality for laying out children widgets.
     // By default, its size is the size of the window. We'll use this as a background for the
     // following widgets, as well as a scrollable container for the children widgets.
@@ -240,27 +231,11 @@ pub fn gui(ui: &mut conrod::UiCell, ids: &Ids, app: &mut DemoApp) {
         .align_middle_y()
         .set(ids.circle, ui);
 
-    /////////////////
-    ///// Image /////
-    /////////////////
-    widget::Text::new("Image")
-        .down_from(ids.shapes_canvas, MARGIN)
-        .align_middle_x_of(ids.canvas)
-        .font_size(SUBTITLE_SIZE)
-        .set(ids.image_title, ui);
-
-    const LOGO_SIDE: conrod::Scalar = 144.0;
-    widget::Image::new(app.rust_logo)
-        .w_h(LOGO_SIDE, LOGO_SIDE)
-        .down(60.0)
-        .align_middle_x_of(ids.canvas)
-        .set(ids.rust_logo, ui);
-
     /////////////////////////////////
     ///// Button, XYPad, Toggle /////
     /////////////////////////////////
     widget::Text::new("Button, XYPad and Toggle")
-        .down_from(ids.rust_logo, 60.0)
+        .down_from(ids.shapes_canvas, 60.0)
         .align_middle_x_of(ids.canvas)
         .font_size(SUBTITLE_SIZE)
         .set(ids.button_title, ui);
